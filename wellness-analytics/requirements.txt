@@ -1,0 +1,25 @@
+# ── Aura: pinned dependencies (tested on Python 3.12) ────────────────────────
+# Web framework + server
+fastapi==0.138.1
+uvicorn[standard]==0.49.0
+python-multipart==0.0.32
+jinja2==3.1.6
+
+# Data validation
+pydantic==2.13.4
+
+# Database (SQLite ships with Python; psycopg2 only needed for Postgres/Docker)
+SQLAlchemy==2.0.51
+psycopg2-binary==2.9.10
+
+# NLP
+vaderSentiment==3.3.2
+
+# ML + analytics
+scikit-learn==1.8.0
+numpy==2.4.4
+pandas==3.0.2
+
+# Testing / HTTP client (TestClient uses httpx under the hood)
+httpx==0.28.1
+pytest==8.3.4

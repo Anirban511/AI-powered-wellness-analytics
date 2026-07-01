@@ -1,0 +1,37 @@
+# ── Aura: full stack, one command ────────────────────────────────────────────
+#   docker compose up --build
+# Brings up Postgres + the Aura API together. The API waits for the DB, creates
+# its tables, seeds reproducible demo data, and serves the dashboard on :8000.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: aura
+      POSTGRES_PASSWORD: aura
+      POSTGRES_DB: aura
+    volumes:
+      - aura_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aura"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://aura:aura@db:5432/aura
+      SEED_ON_START: "true"
+      SENTIMENT_BACKEND: "vader"
+      # Demo-data knobs (override here if you want a bigger/smaller dataset)
+      SEED_USERS: "45"
+      SEED_WEEKS: "8"
+      SEED_SEED: "7"
+    ports:
+      - "8000:8000"
+
+volumes:
+  aura_pgdata:

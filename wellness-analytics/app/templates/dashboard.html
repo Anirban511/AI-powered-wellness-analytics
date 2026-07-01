@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ app_name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <span class="wordmark">Aura<span class="dot">.</span></span>
+    </div>
+    <span class="tagline">a mood journal that takes data seriously</span>
+    <div class="spacer"></div>
+    <div class="toggle" role="tablist">
+      <button id="tab-me" class="active" onclick="setView('me')">Me</button>
+      <button id="tab-biz" onclick="setView('biz')">Business</button>
+    </div>
+    <span class="disclaimer-chip">Wellbeing tool — not a medical service</span>
+  </header>
+
+  <main class="wrap">
+
+    <!-- ============== PERSONAL VIEW ============== -->
+    <section id="view-me" class="view active">
+      <div class="picker-row">
+        <span class="section-eyebrow">Viewing as</span>
+        <select id="userSelect" onchange="loadUser()"></select>
+        <span id="personaTag" class="persona-tag"></span>
+        <div class="spacer"></div>
+        <a id="reportLink" class="btn ghost small" href="#" target="_blank">Open weekly report ↗</a>
+      </div>
+
+      <div class="grid cols-2">
+        <!-- New entry + analysis -->
+        <div class="card">
+          <h2>Today's entry</h2>
+          <p class="sub">Write how the day felt. Aura reads the sentiment, scores stress, and suggests one small step.</p>
+          <textarea id="entryText" placeholder="It's been one of those weeks…"></textarea>
+          <div style="margin-top:12px;">
+            <button class="btn" onclick="analyzeEntry()">Analyze entry</button>
+          </div>
+
+          <div id="analysis" class="analysis">
+            <div class="chips" id="analysisChips"></div>
+            <div class="gauge"><div class="needle" id="stressNeedle"></div></div>
+            <div class="gauge-label"><span>calm</span><span id="stressVal">—</span><span>high stress</span></div>
+            <div id="liveRecs" style="margin-top:14px;"></div>
+          </div>
+        </div>
+
+        <!-- Trend snapshot -->
+        <div class="card">
+          <h2>Where stress is heading</h2>
+          <p class="sub" id="trendSummary">—</p>
+          <div class="metricrow">
+            <div class="metric"><div class="v" id="mState">—</div><div class="k">current state</div></div>
+            <div class="metric"><div class="v" id="mTrend">—</div><div class="k">trend</div></div>
+            <div class="metric"><div class="v" id="mForecast">—</div><div class="k">forecast (next wk)</div></div>
+            <div class="metric"><div class="v" id="mVol">—</div><div class="k">volatility</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mood ribbon: the signature element -->
+      <div class="card" style="margin-top:18px;">
+        <span class="section-eyebrow">The mood ribbon</span>
+        <h2>Your stress, day by day</h2>
+        <p class="sub">Raw daily stress (area) with a smoothed trend line (EWMA). Spikes above your baseline are marked.</p>
+        <canvas id="ribbonChart" height="120"></canvas>
+      </div>
+
+      <!-- Standing recommendations -->
+      <div class="card" style="margin-top:18px;">
+        <h2>Personalized for you</h2>
+        <p class="sub">Surfaced from your recent themes and trend — each says why.</p>
+        <div id="standingRecs"><div class="loading">Loading…</div></div>
+      </div>
+    </section>
+
+    <!-- ============== BUSINESS VIEW ============== -->
+    <section id="view-biz" class="view">
+      <div class="picker-row">
+        <span class="section-eyebrow">Product &amp; business health</span>
+        <span class="persona-tag" id="asOf">—</span>
+      </div>
+
+      <div class="grid cols-3" id="kpis">
+        <div class="card kpi"><div class="v" id="kUsers">—</div><div class="k">total users</div></div>
+        <div class="card kpi"><div class="v" id="kWau">—</div><div class="k">weekly active users</div></div>
+        <div class="card kpi"><div class="v" id="kStick">—</div><div class="k">stickiness (DAU/WAU)</div></div>
+        <div class="card kpi"><div class="v" id="kStress">—</div><div class="k">avg stress score</div></div>
+        <div class="card kpi"><div class="v" id="kImprove">—</div><div class="k">users improving<span class="delta good" id="kChange"></span></div></div>
+        <div class="card kpi"><div class="v" id="kFlags">—</div><div class="k">safety flags (support shown)</div></div>
+      </div>
+
+      <div class="grid cols-2" style="margin-top:18px;">
+        <div class="card">
+          <span class="section-eyebrow">Activation</span>
+          <h2>Engagement funnel</h2>
+          <p class="sub">Sign-up → journal → see insight → get advice → act on it. Where does the value loop leak?</p>
+          <div id="funnel"><div class="loading">Loading…</div></div>
+        </div>
+
+        <div class="card">
+          <span class="section-eyebrow">Stickiness over time</span>
+          <h2>Weekly retention by cohort</h2>
+          <p class="sub">% of each signup cohort still active each week. Greener = stickier.</p>
+          <div id="retention" style="overflow-x:auto;"><div class="loading">Loading…</div></div>
+        </div>
+      </div>
+
+      <!-- ROI -->
+      <div class="card" style="margin-top:18px;">
+        <span class="section-eyebrow">Does it pay for itself?</span>
+        <h2>Unit economics &amp; ROI</h2>
+        <p class="sub">A B2B corporate-wellness lens: revenue vs. value delivered. Adjust the inputs to pressure-test it.</p>
+        <div class="picker-row">
+          <label>Seats <input type="number" id="roiSeats" value="500" min="1" style="width:110px;" /></label>
+          <label>$ / seat / mo <input type="number" id="roiPrice" value="6" min="0" step="0.5" style="width:90px;" /></label>
+          <button class="btn small" onclick="loadRoi()">Recalculate</button>
+        </div>
+        <div class="roi-grid" id="roiGrid"></div>
+        <p class="note" id="roiNote"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>

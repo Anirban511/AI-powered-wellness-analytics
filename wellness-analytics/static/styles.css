@@ -1,0 +1,161 @@
+/* ============================================================
+   Aura — Wellness Analytics
+   Design: a Mood Journal that takes data seriously.
+   Display face: Newsreader (literary, journal-like).
+   Body face:    Inter (clean, neutral).
+   Palette is cool sage + slate with sage(calm)->coral(stress)
+   carrying the one idea the whole product is about.
+   ============================================================ */
+:root {
+  --ink: #20303a;
+  --ink-soft: #45565e;
+  --muted: #6b7d83;
+  --paper: #eaeeec;
+  --surface: #ffffff;
+  --line: #d7dedb;
+  --sage: #2f8f7d;     /* calm / positive / good */
+  --amber: #d9a441;    /* caution */
+  --coral: #d96a5b;    /* stress / high */
+  --sage-tint: #e4f0ec;
+  --coral-tint: #f7e6e2;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(32,48,58,.06), 0 8px 24px rgba(32,48,58,.06);
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.5;
+}
+a { color: var(--sage); }
+
+/* ---------- Header ---------- */
+.topbar {
+  display: flex; align-items: center; gap: 20px;
+  padding: 18px 28px; background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; z-index: 20;
+}
+.wordmark { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: -.01em; }
+.wordmark .dot { color: var(--coral); }
+.tagline { color: var(--muted); font-size: 13px; margin-left: -8px; }
+.spacer { flex: 1; }
+.disclaimer-chip {
+  font-size: 11.5px; color: var(--ink-soft); background: var(--sage-tint);
+  border: 1px solid var(--line); padding: 5px 10px; border-radius: 999px;
+}
+
+/* ---------- View toggle ---------- */
+.toggle { display: inline-flex; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.toggle button {
+  font-family: var(--font-body); font-size: 13.5px; font-weight: 600;
+  border: 0; background: transparent; color: var(--muted);
+  padding: 7px 16px; border-radius: 999px; cursor: pointer;
+}
+.toggle button.active { background: var(--ink); color: #fff; }
+
+/* ---------- Layout ---------- */
+.wrap { max-width: 1120px; margin: 0 auto; padding: 26px 24px 80px; }
+.view { display: none; }
+.view.active { display: block; }
+.grid { display: grid; gap: 18px; }
+.cols-2 { grid-template-columns: 1.15fr .85fr; }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 860px){ .cols-2, .cols-3 { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px;
+}
+.card h2 { font-family: var(--font-display); font-weight: 600; font-size: 19px; margin: 0 0 4px; }
+.card .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+.section-eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+/* ---------- Picker ---------- */
+.picker-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+select, input[type=number] {
+  font-family: var(--font-body); font-size: 14px; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; background: var(--surface);
+}
+.persona-tag { font-size: 11.5px; color: var(--ink-soft); background: var(--paper); border:1px solid var(--line); padding: 4px 9px; border-radius: 999px; }
+
+/* ---------- Entry box ---------- */
+textarea {
+  width: 100%; min-height: 96px; resize: vertical; font-family: var(--font-body);
+  font-size: 14.5px; color: var(--ink); border: 1px solid var(--line);
+  border-radius: 12px; padding: 13px 14px; background: #fcfdfc;
+}
+textarea:focus, select:focus, input:focus { outline: 2px solid var(--sage); outline-offset: 1px; }
+.btn {
+  font-family: var(--font-body); font-weight: 600; font-size: 14px; cursor: pointer;
+  border: 0; border-radius: 10px; padding: 10px 18px; background: var(--ink); color: #fff;
+}
+.btn:hover { background: #16242c; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.small { padding: 6px 12px; font-size: 12.5px; }
+
+/* ---------- Analysis result ---------- */
+.analysis { margin-top: 16px; display: none; }
+.analysis.show { display: block; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 12px; }
+.chip { font-size: 12.5px; font-weight: 600; padding: 5px 11px; border-radius: 999px; border:1px solid var(--line); }
+.chip.pos { background: var(--sage-tint); color: #1f6557; border-color: #bfe0d7; }
+.chip.neg { background: var(--coral-tint); color: #9c4034; border-color: #ecc8c1; }
+.chip.neu { background: var(--paper); color: var(--ink-soft); }
+
+/* stress gauge bar */
+.gauge { height: 12px; border-radius: 999px; background: linear-gradient(90deg,var(--sage),var(--amber),var(--coral)); position: relative; }
+.gauge .needle { position:absolute; top:-4px; width:4px; height:20px; background: var(--ink); border-radius:2px; transform: translateX(-2px); }
+.gauge-label { display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); margin-top:6px; }
+
+/* ---------- Trend chips ---------- */
+.metricrow { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 14px; }
+@media (max-width:560px){ .metricrow{ grid-template-columns: repeat(2,1fr);} }
+.metric { background: var(--paper); border:1px solid var(--line); border-radius: 12px; padding: 11px 13px; }
+.metric .v { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.metric .k { font-size: 11.5px; color: var(--muted); }
+
+/* ---------- Recommendations ---------- */
+.rec { border:1px solid var(--line); border-left: 3px solid var(--sage); border-radius: 10px; padding: 13px 15px; margin-bottom: 10px; background: #fcfdfc; }
+.rec.support { border-left-color: var(--coral); background: var(--coral-tint); }
+.rec h4 { margin: 0 0 4px; font-size: 14.5px; }
+.rec p { margin: 0 0 6px; font-size: 13.5px; color: var(--ink-soft); }
+.rec .why { font-size: 12px; color: var(--muted); font-style: italic; }
+.rec .actions { margin-top: 8px; }
+.rec.done { opacity: .6; }
+
+/* ---------- KPI cards (business) ---------- */
+.kpi { text-align: left; }
+.kpi .v { font-family: var(--font-display); font-size: 30px; font-weight: 600; line-height: 1.1; }
+.kpi .k { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.kpi .delta { font-size: 12px; font-weight: 600; }
+.delta.good { color: var(--sage); } .delta.bad { color: var(--coral); }
+
+/* ---------- Funnel ---------- */
+.funnel-step { margin-bottom: 10px; }
+.funnel-step .lab { display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; }
+.funnel-bar { height: 26px; border-radius: 8px; background: var(--sage); display:flex; align-items:center; padding-left:10px; color:#fff; font-size:12.5px; font-weight:600; min-width: 40px; }
+
+/* ---------- Retention heatmap ---------- */
+table.cohort { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+table.cohort th, table.cohort td { padding: 7px 8px; text-align: center; border:1px solid var(--line); }
+table.cohort th { color: var(--muted); font-weight: 600; }
+table.cohort td.label { text-align: left; color: var(--ink-soft); white-space: nowrap; }
+
+/* ---------- ROI ---------- */
+.roi-grid { display:grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin: 14px 0; }
+.roi-cell { background: var(--paper); border:1px solid var(--line); border-radius: 12px; padding: 13px; }
+.roi-cell .v { font-family: var(--font-display); font-size: 24px; font-weight: 600; }
+.roi-cell .k { font-size: 12px; color: var(--muted); }
+.roi-cell.hi { background: var(--sage-tint); border-color:#bfe0d7; }
+.note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+
+.loading { color: var(--muted); font-size: 13.5px; padding: 12px 0; }
+.empty { color: var(--muted); font-size: 13.5px; }
+canvas { max-width: 100%; }
